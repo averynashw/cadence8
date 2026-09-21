@@ -1,0 +1,10 @@
+:host {
+  display: block;
+}
+
+.main {
+  display: grid;
+  min-height: 100dvh;
+  place-content: center;
+  text-align: center;
+}
