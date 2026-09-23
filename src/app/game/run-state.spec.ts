@@ -22,16 +22,25 @@ describe('getRunStatus', () => {
     expect(getRunStatus(run)).toBe('ready');
   });
 
-  it('returns active after the input buffer is cleared', () => {
+  it('returns active after backspacing all input', () => {
     const sequence: TargetSequence = [['a', 's'], ['j', 'k']];
     const run = backspace(enterKey(createRun(sequence), 'a', 0));
     expect(getRunStatus(run)).toBe('active');
   });
 
-  it('returns complete when every target position has input', () => {
+  it('returns complete when only earlier groups contain errors', () => {
     const sequence: TargetSequence = [['a'], ['j']];
-    const run = enterKey(enterKey(createRun(sequence), 'a', 0), 'k', 100);
+    const run = enterKey(enterKey(createRun(sequence), 's', 0), 'j', 100);
     expect(getRunStatus(run)).toBe('complete');
+  });
+
+  it('returns active when the final group contains an error', () => {
+    const sequence: TargetSequence = [['a'], ['j', 'k']];
+    let run = createRun(sequence);
+    run = enterKey(run, 'a', 0);
+    run = enterKey(run, 'l', 100);
+    run = enterKey(run, 'k', 200);
+    expect(getRunStatus(run)).toBe('active');
   });
 });
 
@@ -55,7 +64,7 @@ describe('enterKey', () => {
     expect(run.completedAt).toBeNull();
   });
 
-  it('completes the run on the final position', () => {
+  it('records the completion time on the final key', () => {
     let run = createRun(sequence);
     run = enterKey(run, 'a', 0);
     run = enterKey(run, 's', 100);
@@ -70,6 +79,13 @@ describe('enterKey', () => {
     run = enterKey(run, 'a', 0);
     expect(enterKey(run, 's', 100)).toBe(run);
   });
+
+  it('ignores input past a final group with an error', () => {
+    let run = createRun([['a']]);
+    run = enterKey(run, 's', 0);
+    expect(enterKey(run, 'a', 100)).toBe(run);
+    expect(run.completedAt).toBeNull();
+  });
 });
 
 describe('backspace', () => {
@@ -80,6 +96,27 @@ describe('backspace', () => {
     expect(run.inputBuffer).toEqual([]);
     expect(run.forwardInputHistory).toEqual([{ expected: 'a', actual: 'f' }]);
     expect(run.startedAt).toBe(0);
+  });
+
+  it('expects the same key again after backspacing a mistake', () => {
+    let run = createRun([['a', 's', 'd']]);
+    run = enterKey(run, 'f', 0);
+    run = backspace(run);
+    run = enterKey(run, 'a', 100);
+    expect(run.inputBuffer).toEqual(['a']);
+    expect(run.forwardInputHistory).toEqual([
+      { expected: 'a', actual: 'f' },
+      { expected: 'a', actual: 'a' },
+    ]);
+  });
+
+  it('completes once a final-group error is fixed', () => {
+    let run = createRun([['a']]);
+    run = enterKey(run, 's', 0);
+    run = backspace(run);
+    run = enterKey(run, 'a', 100);
+    expect(getRunStatus(run)).toBe('complete');
+    expect(run.completedAt).toBe(100);
   });
 
   it('does nothing on an empty buffer', () => {

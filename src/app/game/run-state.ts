@@ -31,7 +31,8 @@ export function getRunStatus(run: RunState): RunStatus {
     return 'ready';
   }
 
-  if (run.inputBuffer.length === countTargets(run.sequence)) {
+  // an error in the final group leaves the run open so it ends on a clean group
+  if (isBufferFull(run) && isFinalGroupCorrect(run)) {
     return 'complete';
   }
 
@@ -39,21 +40,19 @@ export function getRunStatus(run: RunState): RunStatus {
 }
 
 export function enterKey(run: RunState, key: GameKey, now: number): RunState {
-  if (getRunStatus(run) === 'complete') {
+  if (isBufferFull(run)) {
     return run;
   }
 
   const expected = run.sequence.flat()[run.inputBuffer.length];
-  const inputBuffer = [...run.inputBuffer, key];
-  const isComplete = inputBuffer.length === countTargets(run.sequence);
-
-  return {
+  const nextRun: RunState = {
     ...run,
-    inputBuffer,
+    inputBuffer: [...run.inputBuffer, key],
     forwardInputHistory: [...run.forwardInputHistory, { expected, actual: key }],
     startedAt: run.startedAt ?? now,
-    completedAt: isComplete ? now : null,
   };
+
+  return getRunStatus(nextRun) === 'complete' ? { ...nextRun, completedAt: now } : nextRun;
 }
 
 export function backspace(run: RunState): RunState {
@@ -65,4 +64,14 @@ export function backspace(run: RunState): RunState {
     ...run,
     inputBuffer: run.inputBuffer.slice(0, -1),
   };
+}
+
+function isBufferFull(run: RunState): boolean {
+  return run.inputBuffer.length === countTargets(run.sequence);
+}
+
+function isFinalGroupCorrect(run: RunState): boolean {
+  const finalGroup = run.sequence.at(-1) ?? [];
+  const finalInput = run.inputBuffer.slice(-finalGroup.length);
+  return finalGroup.every((key, i) => key === finalInput[i]);
 }
