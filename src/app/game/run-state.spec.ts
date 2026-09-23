@@ -1,4 +1,4 @@
-import { createRun, getRunStatus, type RunState } from './run-state';
+import { backspace, createRun, enterKey, getRunStatus } from './run-state';
 import type { TargetSequence } from './target-sequence';
 
 describe('createRun', () => {
@@ -9,6 +9,8 @@ describe('createRun', () => {
       sequence,
       inputBuffer: [],
       forwardInputHistory: [],
+      startedAt: null,
+      completedAt: null,
     });
   });
 });
@@ -22,35 +24,72 @@ describe('getRunStatus', () => {
 
   it('returns active after the input buffer is cleared', () => {
     const sequence: TargetSequence = [['a', 's'], ['j', 'k']];
-    const run: RunState = {
-      sequence,
-      inputBuffer: [],
-      forwardInputHistory: [
-        {
-          expected: 'a',
-          actual: 'a',
-        },
-      ],
-    };
+    const run = backspace(enterKey(createRun(sequence), 'a', 0));
     expect(getRunStatus(run)).toBe('active');
   });
 
   it('returns complete when every target position has input', () => {
     const sequence: TargetSequence = [['a'], ['j']];
-    const run: RunState = {
-      sequence,
-      inputBuffer: ['a', 'k'],
-      forwardInputHistory: [
-        {
-          expected: 'a',
-          actual: 'a',
-        },
-        {
-          expected: 'j',
-          actual: 'k',
-        },
-      ],
-    };
+    const run = enterKey(enterKey(createRun(sequence), 'a', 0), 'k', 100);
     expect(getRunStatus(run)).toBe('complete');
+  });
+});
+
+describe('enterKey', () => {
+  const sequence: TargetSequence = [['a', 's'], ['j', 'k']];
+
+  it('records the expected key across group boundaries', () => {
+    let run = createRun(sequence);
+    run = enterKey(run, 'a', 0);
+    run = enterKey(run, 's', 10);
+    run = enterKey(run, 'l', 20);
+    expect(run.inputBuffer).toEqual(['a', 's', 'l']);
+    expect(run.forwardInputHistory.at(-1)).toEqual({ expected: 'j', actual: 'l' });
+  });
+
+  it('starts timing on the first input instead of at creation', () => {
+    let run = createRun(sequence);
+    run = enterKey(run, 'a', 500);
+    run = enterKey(run, 's', 600);
+    expect(run.startedAt).toBe(500);
+    expect(run.completedAt).toBeNull();
+  });
+
+  it('completes the run on the final position', () => {
+    let run = createRun(sequence);
+    run = enterKey(run, 'a', 0);
+    run = enterKey(run, 's', 100);
+    run = enterKey(run, 'j', 200);
+    run = enterKey(run, 'k', 300);
+    expect(getRunStatus(run)).toBe('complete');
+    expect(run.completedAt).toBe(300);
+  });
+
+  it('ignores input after completion', () => {
+    let run = createRun([['a']]);
+    run = enterKey(run, 'a', 0);
+    expect(enterKey(run, 's', 100)).toBe(run);
+  });
+});
+
+describe('backspace', () => {
+  it('removes the latest input but keeps its history', () => {
+    let run = createRun([['a', 's', 'd']]);
+    run = enterKey(run, 'f', 0);
+    run = backspace(run);
+    expect(run.inputBuffer).toEqual([]);
+    expect(run.forwardInputHistory).toEqual([{ expected: 'a', actual: 'f' }]);
+    expect(run.startedAt).toBe(0);
+  });
+
+  it('does nothing on an empty buffer', () => {
+    const run = createRun([['a']]);
+    expect(backspace(run)).toBe(run);
+  });
+
+  it('does nothing after completion', () => {
+    let run = createRun([['a']]);
+    run = enterKey(run, 'a', 0);
+    expect(backspace(run)).toBe(run);
   });
 });
