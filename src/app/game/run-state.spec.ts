@@ -53,7 +53,7 @@ describe('enterKey', () => {
     run = enterKey(run, 's', 10);
     run = enterKey(run, 'l', 20);
     expect(run.inputBuffer).toEqual(['a', 's', 'l']);
-    expect(run.forwardInputHistory.at(-1)).toEqual({ expected: 'j', actual: 'l' });
+    expect(run.forwardInputHistory.at(-1)).toEqual({ expected: 'j', actual: 'l', time: 20 });
   });
 
   it('starts timing on the first input instead of at creation', () => {
@@ -94,7 +94,7 @@ describe('backspace', () => {
     run = enterKey(run, 'f', 0);
     run = backspace(run);
     expect(run.inputBuffer).toEqual([]);
-    expect(run.forwardInputHistory).toEqual([{ expected: 'a', actual: 'f' }]);
+    expect(run.forwardInputHistory).toEqual([{ expected: 'a', actual: 'f', time: 0 }]);
     expect(run.startedAt).toBe(0);
   });
 
@@ -105,8 +105,8 @@ describe('backspace', () => {
     run = enterKey(run, 'a', 100);
     expect(run.inputBuffer).toEqual(['a']);
     expect(run.forwardInputHistory).toEqual([
-      { expected: 'a', actual: 'f' },
-      { expected: 'a', actual: 'a' },
+      { expected: 'a', actual: 'f', time: 0 },
+      { expected: 'a', actual: 'a', time: 100 },
     ]);
   });
 

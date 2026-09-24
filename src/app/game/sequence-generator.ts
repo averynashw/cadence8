@@ -2,6 +2,8 @@ import { GAME_KEYS, LEFT_HAND_KEYS, RIGHT_HAND_KEYS, type GameKey } from './game
 import { createSeededRandom } from './seeded-random';
 import type { TargetGroup, TargetSequence } from './target-sequence';
 
+export const GENERATOR_VERSION = 1;
+
 type GroupBuilder = (random: () => number, length: number) => TargetGroup;
 
 function pick<T>(random: () => number, items: readonly T[]): T {

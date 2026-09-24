@@ -4,6 +4,7 @@ import { countTargets, type TargetSequence } from './target-sequence';
 export interface ForwardInput {
   readonly expected: GameKey;
   readonly actual: GameKey;
+  readonly time: number;
 }
 
 export interface RunState {
@@ -48,7 +49,7 @@ export function enterKey(run: RunState, key: GameKey, now: number): RunState {
   const nextRun: RunState = {
     ...run,
     inputBuffer: [...run.inputBuffer, key],
-    forwardInputHistory: [...run.forwardInputHistory, { expected, actual: key }],
+    forwardInputHistory: [...run.forwardInputHistory, { expected, actual: key, time: now }],
     startedAt: run.startedAt ?? now,
   };
 
