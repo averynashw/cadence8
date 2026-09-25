@@ -1,4 +1,7 @@
 html {
+  color-scheme: dark;
+  background: #111113;
+  color: #edeef0;
   font-family: system-ui, sans-serif;
 }
 

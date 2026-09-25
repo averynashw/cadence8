@@ -1,0 +1,27 @@
+<div class="key-row">
+  @for (hand of hands; track $index) {
+    <div class="hand">
+      @for (key of hand; track key) {
+        <div class="key">
+          <span class="dot" [attr.data-key]="key"></span>
+          <span class="label">{{ key.toUpperCase() }}</span>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<div class="stream">
+  @for (group of positions(); track $index) {
+    <div class="group">
+      @for (position of group; track $index) {
+        <span
+          class="dot"
+          [attr.data-key]="position.key"
+          [class]="position.state"
+          [class.wrong]="position.correct === false"
+        ></span>
+      }
+    </div>
+  }
+</div>

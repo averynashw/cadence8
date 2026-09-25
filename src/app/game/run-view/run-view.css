@@ -1,0 +1,94 @@
+:host {
+  display: grid;
+  gap: 3rem;
+  justify-items: center;
+}
+
+.key-row {
+  display: flex;
+  gap: 4rem;
+}
+
+.hand {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.key {
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+}
+
+.label {
+  font-weight: 600;
+}
+
+.stream {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem 2.5rem;
+  justify-content: center;
+  max-width: 64rem;
+}
+
+.group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.dot {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--key-color);
+  box-sizing: border-box;
+}
+
+.current {
+  outline: 0.25rem solid var(--key-color);
+  outline-offset: 0.25rem;
+}
+
+.completed {
+  opacity: 0.3;
+}
+
+.wrong {
+  background: transparent;
+  border: 0.25rem solid var(--key-color);
+  opacity: 0.6;
+}
+
+/* placeholder hues from radix colors (step 9) */
+[data-key='a'] {
+  --key-color: #e5484d;
+}
+
+[data-key='s'] {
+  --key-color: #f76b15;
+}
+
+[data-key='d'] {
+  --key-color: #ffc53d;
+}
+
+[data-key='f'] {
+  --key-color: #46a758;
+}
+
+[data-key='j'] {
+  --key-color: #12a594;
+}
+
+[data-key='k'] {
+  --key-color: #0090ff;
+}
+
+[data-key='l'] {
+  --key-color: #6e56cf;
+}
+
+[data-key=';'] {
+  --key-color: #d6409f;
+}
