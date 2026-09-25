@@ -38,6 +38,7 @@
 }
 
 .dot {
+  position: relative;
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
@@ -45,13 +46,20 @@
   box-sizing: border-box;
 }
 
-.current {
-  outline: 0.25rem solid var(--key-color);
-  outline-offset: 0.25rem;
-}
-
 .completed {
   opacity: 0.3;
+}
+
+/* a caret in the gap before the current dot marks the player's position */
+.current::before {
+  content: '';
+  position: absolute;
+  top: -0.25rem;
+  left: -0.5rem;
+  width: 0.1875rem;
+  height: 2.5rem;
+  border-radius: 0.125rem;
+  background: var(--text);
 }
 
 .wrong {
