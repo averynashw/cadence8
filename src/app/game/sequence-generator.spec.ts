@@ -9,19 +9,23 @@ function isLeftHand(key: GameKey): boolean {
 
 describe('createAlternatingGroup', () => {
   it('switches hands on every key', () => {
-    const group = createAlternatingGroup(createSeededRandom(1), 5);
-    const hands = group.map(isLeftHand);
-    expect(hands.every((left, i) => i === 0 || left !== hands[i - 1])).toBe(true);
+    for (let seed = 0; seed < 20; seed++) {
+      const group = createAlternatingGroup(createSeededRandom(seed), 5);
+      const hands = group.map(isLeftHand);
+      expect(hands.every((left, i) => i === 0 || left !== hands[i - 1])).toBe(true);
+    }
   });
 });
 
 describe('createRollGroup', () => {
   it('rolls across adjacent keys on one hand', () => {
-    const group = createRollGroup(createSeededRandom(1), 4);
-    const indexes = group.map((key) => GAME_KEYS.indexOf(key));
-    const step = indexes[1] - indexes[0];
-    expect(Math.abs(step)).toBe(1);
-    expect(indexes.every((index, i) => i === 0 || index - indexes[i - 1] === step)).toBe(true);
+    for (let seed = 0; seed < 20; seed++) {
+      const group = createRollGroup(createSeededRandom(seed), 4);
+      const indexes = group.map((key) => GAME_KEYS.indexOf(key));
+      const step = indexes[1] - indexes[0];
+      expect(Math.abs(step)).toBe(1);
+      expect(indexes.every((index, i) => i === 0 || index - indexes[i - 1] === step)).toBe(true);
+    }
   });
 });
 
@@ -44,6 +48,22 @@ describe('generateSequence', () => {
     expect(generateSequence(42, 0)).toEqual([]);
     expect(generateSequence(42, 1).map((group) => group.length)).toEqual([1]);
     expect(generateSequence(42, 2).map((group) => group.length)).toEqual([2]);
+  });
+
+  it('keeps long-run key frequency roughly balanced', () => {
+    const counts = new Map<GameKey, number>(GAME_KEYS.map((key) => [key, 0]));
+    let total = 0;
+    for (let seed = 0; seed < 200; seed++) {
+      for (const key of generateSequence(seed, 40).flat()) {
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+        total++;
+      }
+    }
+    // an even share is 12.5%, and three-key rolls favor the middle keys slightly
+    for (const count of counts.values()) {
+      expect(count / total).toBeGreaterThan(0.1);
+      expect(count / total).toBeLessThan(0.15);
+    }
   });
 
   it('rejects invalid target counts', () => {

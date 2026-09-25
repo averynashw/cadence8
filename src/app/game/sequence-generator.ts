@@ -65,13 +65,13 @@ function chooseGroupLength(random: () => number, remaining: number): number {
 
 // initial weights keep random groups occasional
 function choosePattern(random: () => number): GroupBuilder {
-  const roll = random();
+  const draw = random();
 
-  if (roll < 0.1) {
+  if (draw < 0.1) {
     return createRandomGroup;
   }
 
-  return roll < 0.55 ? createAlternatingGroup : createRollGroup;
+  return draw < 0.55 ? createAlternatingGroup : createRollGroup;
 }
 
 export function generateSequence(seed: number, targetCount: number): TargetSequence {

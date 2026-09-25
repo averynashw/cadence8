@@ -25,7 +25,7 @@ describe('scoreRun', () => {
     });
   });
 
-  it('counts corrected mistakes in accuracy and raw speed but not speed', () => {
+  it('counts corrected mistakes in accuracy and raw rate but not speed', () => {
     let run = createRun([['a', 's']]);
     run = enterKey(run, 'f', 0);
     run = backspace(run);

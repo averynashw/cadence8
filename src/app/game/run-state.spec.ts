@@ -17,26 +17,22 @@ describe('createRun', () => {
 
 describe('getRunStatus', () => {
   it('returns ready before the first forward input', () => {
-    const sequence: TargetSequence = [['a', 's'], ['j', 'k']];
-    const run = createRun(sequence);
+    const run = createRun([['a', 's'], ['j', 'k']]);
     expect(getRunStatus(run)).toBe('ready');
   });
 
   it('returns active after backspacing all input', () => {
-    const sequence: TargetSequence = [['a', 's'], ['j', 'k']];
-    const run = backspace(enterKey(createRun(sequence), 'a', 0));
+    const run = backspace(enterKey(createRun([['a', 's'], ['j', 'k']]), 'a', 0));
     expect(getRunStatus(run)).toBe('active');
   });
 
   it('returns complete when only earlier groups contain errors', () => {
-    const sequence: TargetSequence = [['a'], ['j']];
-    const run = enterKey(enterKey(createRun(sequence), 's', 0), 'j', 100);
+    const run = enterKey(enterKey(createRun([['a'], ['j']]), 's', 0), 'j', 100);
     expect(getRunStatus(run)).toBe('complete');
   });
 
   it('returns active when the final group contains an error', () => {
-    const sequence: TargetSequence = [['a'], ['j', 'k']];
-    let run = createRun(sequence);
+    let run = createRun([['a'], ['j', 'k']]);
     run = enterKey(run, 'a', 0);
     run = enterKey(run, 'l', 100);
     run = enterKey(run, 'k', 200);
