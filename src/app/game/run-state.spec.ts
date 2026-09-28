@@ -1,4 +1,4 @@
-import { backspace, createRun, enterKey, getRunStatus } from './run-state';
+import { backspace, countCompletedGroups, createRun, enterKey, getRunStatus } from './run-state';
 import type { TargetSequence } from './target-sequence';
 
 describe('createRun', () => {
@@ -37,6 +37,28 @@ describe('getRunStatus', () => {
     run = enterKey(run, 'l', 100);
     run = enterKey(run, 'k', 200);
     expect(getRunStatus(run)).toBe('active');
+  });
+});
+
+describe('countCompletedGroups', () => {
+  it('counts a group while all its positions are entered, errors included', () => {
+    let run = createRun([['a', 's'], ['j', 'k'], ['d']]);
+    expect(countCompletedGroups(run)).toBe(0);
+    run = enterKey(run, 'a', 0);
+    expect(countCompletedGroups(run)).toBe(0);
+    run = enterKey(run, 'f', 100);
+    expect(countCompletedGroups(run)).toBe(1);
+    run = backspace(run);
+    expect(countCompletedGroups(run)).toBe(0);
+  });
+
+  it('counts the final group only once the run is complete', () => {
+    let run = createRun([['a'], ['j']]);
+    run = enterKey(run, 'a', 0);
+    run = enterKey(run, 'k', 100);
+    expect(countCompletedGroups(run)).toBe(1);
+    run = enterKey(backspace(run), 'j', 200);
+    expect(countCompletedGroups(run)).toBe(2);
   });
 });
 

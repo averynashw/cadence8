@@ -2,6 +2,7 @@
   --background: #111113;
   --text: #edeef0;
   --text-muted: #b0b4ba;
+  --content-width: 64rem;
 }
 
 html {

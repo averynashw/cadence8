@@ -24,12 +24,28 @@
   font-weight: 600;
 }
 
+.stream-area {
+  display: grid;
+  gap: 1rem;
+  width: min(var(--content-width), 100%);
+  text-align: start;
+}
+
+.progress {
+  margin: 0;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* hidden instead of removed so the stream doesn't shift when the run starts */
+.waiting {
+  visibility: hidden;
+}
+
 .stream {
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem 2.5rem;
-  justify-content: center;
-  max-width: 64rem;
 }
 
 .group {

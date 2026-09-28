@@ -11,17 +11,22 @@
   }
 </div>
 
-<div class="stream">
-  @for (group of positions(); track $index) {
-    <div class="group">
-      @for (position of group; track $index) {
-        <span
-          class="dot"
-          [attr.data-key]="position.key"
-          [class]="position.state"
-          [class.wrong]="position.correct === false"
-        ></span>
-      }
-    </div>
-  }
+<div class="stream-area">
+  <p class="progress" [class.waiting]="!started()">
+    {{ completedGroups() }}/{{ run().sequence.length }}
+  </p>
+  <div class="stream">
+    @for (group of positions(); track $index) {
+      <div class="group">
+        @for (position of group; track $index) {
+          <span
+            class="dot"
+            [attr.data-key]="position.key"
+            [class]="position.state"
+            [class.wrong]="position.correct === false"
+          ></span>
+        }
+      </div>
+    }
+  </div>
 </div>

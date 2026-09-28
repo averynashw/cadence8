@@ -1,0 +1,29 @@
+<dl class="headline">
+  <div>
+    <dt>dots/min</dt>
+    <dd>{{ score().keysPerMinute | number: '1.0-0' }}</dd>
+  </div>
+  <div>
+    <dt>accuracy</dt>
+    <dd>{{ score().accuracy | percent }}</dd>
+  </div>
+</dl>
+
+<dl class="details">
+  <div>
+    <dt>run</dt>
+    <dd>{{ dotCount() }} dots</dd>
+  </div>
+  <div>
+    <dt>raw</dt>
+    <dd>{{ score().rawKeysPerMinute | number: '1.0-0' }}</dd>
+  </div>
+  <div>
+    <dt>consistency</dt>
+    <dd>{{ score().consistency | percent }}</dd>
+  </div>
+  <div>
+    <dt>time</dt>
+    <dd>{{ score().elapsedMs / 1000 | number: '1.1-1' }}s</dd>
+  </div>
+</dl>

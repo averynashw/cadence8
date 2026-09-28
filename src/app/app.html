@@ -1,5 +1,9 @@
 <main class="main">
   <h1>Cadence8</h1>
-  <app-run-view [run]="run()" />
+  @if (score(); as score) {
+    <app-run-results [score]="score" [dotCount]="dotCount()" />
+  } @else {
+    <app-run-view [run]="run()" />
+  }
   <button #restartButton type="button" class="restart" (click)="restart()">restart</button>
 </main>

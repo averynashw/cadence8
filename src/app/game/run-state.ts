@@ -40,6 +40,26 @@ export function getRunStatus(run: RunState): RunStatus {
   return 'active';
 }
 
+export function countCompletedGroups(run: RunState): number {
+  if (getRunStatus(run) === 'complete') {
+    return run.sequence.length;
+  }
+
+  let groupEnd = 0;
+  let completed = 0;
+
+  for (const group of run.sequence) {
+    groupEnd += group.length;
+    if (groupEnd > run.inputBuffer.length) {
+      break;
+    }
+    completed++;
+  }
+
+  // the final group counts only once the run is complete
+  return Math.min(completed, run.sequence.length - 1);
+}
+
 export function enterKey(run: RunState, key: GameKey, now: number): RunState {
   if (isBufferFull(run)) {
     return run;

@@ -79,6 +79,33 @@ describe('App', () => {
     expect(streamDots()[0].classList).toContain('current');
   });
 
+  it('shows progress once the run starts and counts completed groups', async () => {
+    const progress = element.querySelector('.progress');
+    const groups = element.querySelectorAll('.stream .group');
+    expect(progress?.classList).toContain('waiting');
+    await press({ code: codeFor(currentKey()) });
+    expect(progress?.classList).not.toContain('waiting');
+    expect(progress?.textContent?.trim()).toBe(`0/${groups.length}`);
+    for (let i = 1; i < groups[0].children.length; i++) {
+      await press({ code: codeFor(currentKey()) });
+    }
+    expect(progress?.textContent?.trim()).toBe(`1/${groups.length}`);
+  });
+
+  it('swaps to results on completion and back on restart', async () => {
+    for (let i = 0; i < TARGET_COUNT - 1; i++) {
+      await press({ code: codeFor(currentKey()) });
+    }
+    expect(element.querySelector('app-run-results')).toBeNull();
+    await press({ code: codeFor(currentKey()) });
+    expect(element.querySelector('app-run-results')?.textContent).toContain('100%');
+    expect(element.querySelector('app-run-view')).toBeNull();
+    element.querySelector('button')?.click();
+    await fixture.whenStable();
+    expect(element.querySelector('app-run-results')).toBeNull();
+    expect(element.querySelector('app-run-view')).not.toBeNull();
+  });
+
   it('restarts with a fresh run and moves focus off restart', async () => {
     const restartButton = element.querySelector('button') as HTMLButtonElement;
     await press({ code: codeFor(currentKey()) });
