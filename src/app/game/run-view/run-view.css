@@ -1,4 +1,9 @@
 :host {
+  --dot-size: 2rem;
+  --line-gap: 1.5rem;
+  /* how far the caret reaches above and below a dot, and left of it */
+  --caret-overhang: 0.25rem;
+  --caret-offset: 0.5rem;
   display: grid;
   gap: 3rem;
   justify-items: center;
@@ -6,7 +11,9 @@
 
 .key-row {
   display: flex;
-  gap: 2.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem 2.5rem;
 }
 
 .hand {
@@ -52,7 +59,13 @@
 .stream {
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem 2.5rem;
+  gap: var(--line-gap) 2.5rem;
+  /* three lines of dots and the two gaps between them */
+  max-height: calc(3 * var(--dot-size) + 2 * var(--line-gap));
+  /* room for the caret (which sticks out past the dots) */
+  margin: calc(-1 * var(--caret-overhang)) calc(-1 * var(--caret-offset));
+  padding: var(--caret-overhang) var(--caret-offset);
+  overflow: hidden;
 }
 
 .group {
@@ -62,8 +75,8 @@
 
 .dot {
   position: relative;
-  width: 2rem;
-  height: 2rem;
+  width: var(--dot-size);
+  height: var(--dot-size);
   border-radius: 50%;
   background: var(--key-color);
   box-sizing: border-box;
@@ -77,10 +90,10 @@
 .current::before {
   content: '';
   position: absolute;
-  top: -0.25rem;
-  left: -0.5rem;
+  top: calc(-1 * var(--caret-overhang));
+  left: calc(-1 * var(--caret-offset));
   width: 0.1875rem;
-  height: 2.5rem;
+  height: calc(var(--dot-size) + 2 * var(--caret-overhang));
   border-radius: 0.125rem;
   background: var(--text);
 }

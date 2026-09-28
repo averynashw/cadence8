@@ -2,8 +2,8 @@
   <p class="progress" [class.waiting]="!started()">
     {{ completedGroups() }}/{{ run().sequence.length }}
   </p>
-  <div class="stream">
-    @for (group of positions(); track $index) {
+  <div #stream class="stream">
+    @for (group of visibleGroups(); track $index) {
       <div class="group">
         @for (position of group; track $index) {
           <span

@@ -19,7 +19,8 @@
 .main,
 .footer {
   justify-self: center;
-  width: min(var(--content-width), 100% - 8rem);
+  /* side space shrinks with the window so a zoomed-in page still fits */
+  width: min(var(--content-width), 92%);
 }
 
 .main {
