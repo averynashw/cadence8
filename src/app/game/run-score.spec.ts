@@ -37,7 +37,7 @@ describe('scoreRun', () => {
     expect(score?.rawKeysPerMinute).toBe(90);
   });
 
-  it('excludes uncorrected errors in earlier groups from speed', () => {
+  it('excludes uncorrected errors from speed', () => {
     let run = createRun([['a', 's'], ['j']]);
     run = enterKey(run, 'a', 0);
     run = enterKey(run, 'd', 1000);

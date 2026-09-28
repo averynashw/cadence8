@@ -26,17 +26,9 @@ describe('getRunStatus', () => {
     expect(getRunStatus(run)).toBe('active');
   });
 
-  it('returns complete when only earlier groups contain errors', () => {
-    const run = enterKey(enterKey(createRun([['a'], ['j']]), 's', 0), 'j', 100);
+  it('returns complete once the final position is entered, even if wrong', () => {
+    const run = enterKey(enterKey(createRun([['a'], ['j']]), 'a', 0), 'k', 100);
     expect(getRunStatus(run)).toBe('complete');
-  });
-
-  it('returns active when the final group contains an error', () => {
-    let run = createRun([['a'], ['j', 'k']]);
-    run = enterKey(run, 'a', 0);
-    run = enterKey(run, 'l', 100);
-    run = enterKey(run, 'k', 200);
-    expect(getRunStatus(run)).toBe('active');
   });
 });
 
@@ -52,12 +44,8 @@ describe('countCompletedGroups', () => {
     expect(countCompletedGroups(run)).toBe(0);
   });
 
-  it('counts the final group only once the run is complete', () => {
-    let run = createRun([['a'], ['j']]);
-    run = enterKey(run, 'a', 0);
-    run = enterKey(run, 'k', 100);
-    expect(countCompletedGroups(run)).toBe(1);
-    run = enterKey(backspace(run), 'j', 200);
+  it('counts every group once the run ends', () => {
+    const run = enterKey(enterKey(createRun([['a'], ['j']]), 'a', 0), 'k', 100);
     expect(countCompletedGroups(run)).toBe(2);
   });
 });
@@ -97,13 +85,6 @@ describe('enterKey', () => {
     run = enterKey(run, 'a', 0);
     expect(enterKey(run, 's', 100)).toBe(run);
   });
-
-  it('ignores input past a final group with an error', () => {
-    let run = createRun([['a']]);
-    run = enterKey(run, 's', 0);
-    expect(enterKey(run, 'a', 100)).toBe(run);
-    expect(run.completedAt).toBeNull();
-  });
 });
 
 describe('backspace', () => {
@@ -126,15 +107,6 @@ describe('backspace', () => {
       { expected: 'a', actual: 'f', time: 0 },
       { expected: 'a', actual: 'a', time: 100 },
     ]);
-  });
-
-  it('completes once a final-group error is fixed', () => {
-    let run = createRun([['a']]);
-    run = enterKey(run, 's', 0);
-    run = backspace(run);
-    run = enterKey(run, 'a', 100);
-    expect(getRunStatus(run)).toBe('complete');
-    expect(run.completedAt).toBe(100);
   });
 
   it('does nothing on an empty buffer', () => {
