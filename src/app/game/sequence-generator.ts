@@ -2,7 +2,7 @@ import { GAME_KEYS, LEFT_HAND_KEYS, RIGHT_HAND_KEYS, type GameKey } from './game
 import { createSeededRandom } from './seeded-random';
 import type { TargetGroup, TargetSequence } from './target-sequence';
 
-export const GENERATOR_VERSION = 1;
+export const GENERATOR_VERSION = 2;
 
 type GroupBuilder = (random: () => number, length: number) => TargetGroup;
 
@@ -10,13 +10,41 @@ function pick<T>(random: () => number, items: readonly T[]): T {
   return items[Math.floor(random() * items.length)];
 }
 
+// the same finger on the other hand, so f pairs with j and a with ;
+function mirrorKey(key: GameKey): GameKey {
+  return GAME_KEYS[GAME_KEYS.length - 1 - GAME_KEYS.indexOf(key)];
+}
+
+// a parallel key sits in the same spot on the other hand, so a pairs with j
+function matchingRightKey(left: GameKey, mirrored: boolean): GameKey {
+  return mirrored ? mirrorKey(left) : GAME_KEYS[GAME_KEYS.indexOf(left) + LEFT_HAND_KEYS.length];
+}
+
+function chooseCrossHandPair(random: () => number): GameKey[] {
+  const left = pick(random, LEFT_HAND_KEYS);
+  const mirrored = random() < 0.5;
+  const right = matchingRightKey(left, mirrored);
+  return random() < 0.5 ? [left, right] : [right, left];
+}
+
+function repeatPattern(pattern: readonly GameKey[], length: number): GameKey[] {
+  return Array.from({ length }, (_, position) => pattern[position % pattern.length]);
+}
+
 export function createAlternatingGroup(random: () => number, length: number): TargetGroup {
+  const mirrored = random() < 0.5;
   const startWithLeft = random() < 0.5;
+  const reverse = random() < 0.5;
+  // staying in one half of each hand keeps every key equally likely
+  const halfStart = random() < 0.5 ? 0 : 2;
   const group: GameKey[] = [];
 
   for (let position = 0; position < length; position++) {
+    // every two keys move one step, and a fifth key returns to the start
+    const step = Math.floor(position / 2) % 2;
+    const left = LEFT_HAND_KEYS[halfStart + (reverse ? 1 - step : step)];
     const useLeft = position % 2 === 0 ? startWithLeft : !startWithLeft;
-    group.push(pick(random, useLeft ? LEFT_HAND_KEYS : RIGHT_HAND_KEYS));
+    group.push(useLeft ? left : matchingRightKey(left, mirrored));
   }
 
   return group;
@@ -36,22 +64,29 @@ export function createRollGroup(random: () => number, length: number): TargetGro
     group.push(handKeys[index]);
   }
 
-  // a hand has only four keys, so a group of five ends with one random key
+  // a hand has only four keys, so a fifth key crosses to the same finger on the other hand
   if (length > rollLength) {
-    group.push(pick(random, GAME_KEYS));
+    group.push(mirrorKey(group[group.length - 1]));
   }
 
   return group;
 }
 
-export function createRandomGroup(random: () => number, length: number): TargetGroup {
-  const group: GameKey[] = [];
+export function createTwoHandTrillGroup(random: () => number, length: number): TargetGroup {
+  return repeatPattern(chooseCrossHandPair(random), length);
+}
 
-  for (let position = 0; position < length; position++) {
-    group.push(pick(random, GAME_KEYS));
-  }
+export function createOneHandTrillGroup(random: () => number, length: number): TargetGroup {
+  const handKeys = random() < 0.5 ? LEFT_HAND_KEYS : RIGHT_HAND_KEYS;
+  // every key appears in exactly two of these pairs, so no finger is favored
+  const [firstIndex, secondIndex] = pick(random, [[0, 1], [2, 3], [0, 2], [1, 3]]);
+  const [first, second] = [handKeys[firstIndex], handKeys[secondIndex]];
+  return repeatPattern(random() < 0.5 ? [first, second] : [second, first], length);
+}
 
-  return group;
+export function createDoubleGroup(random: () => number, length: number): TargetGroup {
+  const [first, second] = chooseCrossHandPair(random);
+  return repeatPattern([first, first, second, second], length);
 }
 
 function chooseGroupLength(random: () => number, remaining: number): number {
@@ -63,15 +98,26 @@ function chooseGroupLength(random: () => number, remaining: number): number {
   return pick(random, validLengths);
 }
 
-// initial weights keep random groups occasional
-function choosePattern(random: () => number): GroupBuilder {
-  const draw = random();
+// starting weights in percent to be tuned through playtesting
+const PATTERN_WEIGHTS: readonly (readonly [GroupBuilder, number])[] = [
+  [createAlternatingGroup, 30],
+  [createRollGroup, 30],
+  [createTwoHandTrillGroup, 15],
+  [createOneHandTrillGroup, 15],
+  [createDoubleGroup, 10],
+];
 
-  if (draw < 0.1) {
-    return createRandomGroup;
+function choosePattern(random: () => number): GroupBuilder {
+  let draw = random() * 100;
+
+  for (const [builder, weight] of PATTERN_WEIGHTS) {
+    draw -= weight;
+    if (draw < 0) {
+      return builder;
+    }
   }
 
-  return draw < 0.55 ? createAlternatingGroup : createRollGroup;
+  throw new Error('pattern weights must add up to 100');
 }
 
 export function generateSequence(seed: number, targetCount: number): TargetSequence {
