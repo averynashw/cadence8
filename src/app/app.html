@@ -1,9 +1,18 @@
-<main class="main">
-  <h1>Cadence8</h1>
-  @if (score(); as score) {
-    <app-run-results [score]="score" [dotCount]="dotCount()" />
-  } @else {
-    <app-run-view [run]="run()" />
-  }
-  <button #restartButton type="button" class="restart" (click)="restart()">restart</button>
-</main>
+<div class="page">
+  <header>
+    <h1 class="title">Cadence8</h1>
+  </header>
+  <main class="main">
+    @if (score(); as score) {
+      <app-run-results [score]="score" [dotCount]="dotCount()" />
+    } @else {
+      <app-run-view [run]="run()" />
+    }
+    <button #restartButton type="button" class="restart" (click)="restart()">restart</button>
+  </main>
+  <footer class="footer">
+    <p class="hint">
+      <kbd class="hint-key">tab</kbd> then <kbd class="hint-key">enter</kbd> to restart
+    </p>
+  </footer>
+</div>

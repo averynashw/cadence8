@@ -2,13 +2,46 @@
   display: block;
 }
 
+.page {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  min-height: 100dvh;
+  padding: 1.5rem 2rem;
+  box-sizing: border-box;
+}
+
+.title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.main,
+.footer {
+  justify-self: center;
+  width: min(var(--content-width), 100% - 8rem);
+}
+
 .main {
   display: grid;
   gap: 2rem;
+  align-content: center;
   justify-items: center;
-  min-height: 100dvh;
-  place-content: center;
+}
+
+.hint {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.875rem;
   text-align: center;
+}
+
+.hint-key {
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  background: var(--surface);
+  color: var(--text-muted);
+  font: inherit;
 }
 
 .restart {

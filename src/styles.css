@@ -1,8 +1,9 @@
 :root {
   --background: #111113;
+  --surface: #2b2d31;
   --text: #edeef0;
   --text-muted: #b0b4ba;
-  --content-width: 64rem;
+  --content-width: 120rem;
 }
 
 html {
