@@ -11,9 +11,17 @@
 }
 
 .title {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
   margin: 0;
   font-size: 2rem;
   font-weight: 700;
+}
+
+.logo {
+  width: 1.5em;
+  height: 1.5em;
 }
 
 .main,
