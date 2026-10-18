@@ -63,11 +63,16 @@ export function enterKey(run: RunState, key: GameKey, now: number): RunState {
   const nextRun: RunState = {
     ...run,
     inputBuffer: [...run.inputBuffer, key],
-    forwardInputHistory: [...run.forwardInputHistory, { expected, actual: key, time: now }],
+    forwardInputHistory: [
+      ...run.forwardInputHistory,
+      { expected, actual: key, time: now },
+    ],
     startedAt: run.startedAt ?? now,
   };
 
-  return getRunStatus(nextRun) === 'complete' ? { ...nextRun, completedAt: now } : nextRun;
+  return getRunStatus(nextRun) === 'complete'
+    ? { ...nextRun, completedAt: now }
+    : nextRun;
 }
 
 export function backspace(run: RunState): RunState {

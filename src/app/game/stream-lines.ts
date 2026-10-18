@@ -1,7 +1,10 @@
 // once the current group reaches the third line, earlier lines scroll away
 const SCROLL_LINE = 2;
 
-export function countGroupsToHide(groupTops: readonly number[], currentGroup: number): number {
+export function countGroupsToHide(
+  groupTops: readonly number[],
+  currentGroup: number,
+): number {
   const lineTops = [...new Set(groupTops)];
   const currentLine = lineTops.indexOf(groupTops[currentGroup]);
 

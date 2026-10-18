@@ -11,7 +11,12 @@
     } @else {
       <app-run-view [run]="run()" />
     }
-    <button #restartButton type="button" class="restart" (click)="restart()">restart</button>
+    <button
+      #restartButton
+      type="button"
+      class="restart"
+      (click)="restart()"
+    >restart</button>
   </main>
   <footer class="footer">
     <p class="hint">

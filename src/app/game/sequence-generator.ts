@@ -17,7 +17,9 @@ function mirrorKey(key: GameKey): GameKey {
 
 // a parallel key sits in the same spot on the other hand, so a pairs with j
 function matchingRightKey(left: GameKey, mirrored: boolean): GameKey {
-  return mirrored ? mirrorKey(left) : GAME_KEYS[GAME_KEYS.indexOf(left) + LEFT_HAND_KEYS.length];
+  return mirrored
+    ? mirrorKey(left)
+    : GAME_KEYS[GAME_KEYS.indexOf(left) + LEFT_HAND_KEYS.length];
 }
 
 function chooseCrossHandPair(random: () => number): GameKey[] {
@@ -31,7 +33,10 @@ function repeatPattern(pattern: readonly GameKey[], length: number): GameKey[] {
   return Array.from({ length }, (_, position) => pattern[position % pattern.length]);
 }
 
-export function createAlternatingGroup(random: () => number, length: number): TargetGroup {
+export function createAlternatingGroup(
+  random: () => number,
+  length: number,
+): TargetGroup {
   const mirrored = random() < 0.5;
   const startWithLeft = random() < 0.5;
   const reverse = random() < 0.5;
@@ -64,7 +69,8 @@ export function createRollGroup(random: () => number, length: number): TargetGro
     group.push(handKeys[index]);
   }
 
-  // a hand has only four keys, so a fifth key crosses to the same finger on the other hand
+  // a hand has only four keys, so a fifth key crosses to the same finger on the
+  // other hand
   if (length > rollLength) {
     group.push(mirrorKey(group[group.length - 1]));
   }
@@ -72,11 +78,17 @@ export function createRollGroup(random: () => number, length: number): TargetGro
   return group;
 }
 
-export function createTwoHandTrillGroup(random: () => number, length: number): TargetGroup {
+export function createTwoHandTrillGroup(
+  random: () => number,
+  length: number,
+): TargetGroup {
   return repeatPattern(chooseCrossHandPair(random), length);
 }
 
-export function createOneHandTrillGroup(random: () => number, length: number): TargetGroup {
+export function createOneHandTrillGroup(
+  random: () => number,
+  length: number,
+): TargetGroup {
   const handKeys = random() < 0.5 ? LEFT_HAND_KEYS : RIGHT_HAND_KEYS;
   // every key appears in exactly two of these pairs, so no finger is favored
   const [firstIndex, secondIndex] = pick(random, [[0, 1], [2, 3], [0, 2], [1, 3]]);

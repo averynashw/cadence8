@@ -22,7 +22,9 @@ export function scoreRun(run: RunState): RunScore | null {
 
   const history = run.forwardInputHistory;
   const targets = run.sequence.flat();
-  const correctInputs = history.filter((input) => input.actual === input.expected).length;
+  const correctInputs = history.filter(
+    (input) => input.actual === input.expected,
+  ).length;
   const correctKeys = run.inputBuffer.filter((key, i) => key === targets[i]).length;
   const elapsedMs = completedAt - startedAt;
 
@@ -60,9 +62,11 @@ function measureConsistency(offsets: readonly number[], elapsedMs: number): numb
   }
 
   const mean = counts.reduce((total, count) => total + count, 0) / counts.length;
-  const variance = counts.reduce((total, count) => total + (count - mean) ** 2, 0) / counts.length;
+  const variance =
+    counts.reduce((total, count) => total + (count - mean) ** 2, 0) / counts.length;
   const cv = Math.sqrt(variance) / mean;
 
-  // maps a coefficient of variation of 0 to 1 and larger ones toward 0 (curve from monkeytype)
+  // maps a coefficient of variation of 0 to 1 and larger ones toward 0
+  // (curve from monkeytype)
   return 1 - Math.tanh(cv + cv ** 3 / 3 + cv ** 5 / 5);
 }

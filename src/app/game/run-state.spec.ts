@@ -1,4 +1,10 @@
-import { backspace, countCompletedGroups, createRun, enterKey, getRunStatus } from './run-state';
+import {
+  backspace,
+  countCompletedGroups,
+  createRun,
+  enterKey,
+  getRunStatus,
+} from './run-state';
 import type { TargetSequence } from './target-sequence';
 
 describe('createRun', () => {
@@ -59,7 +65,11 @@ describe('enterKey', () => {
     run = enterKey(run, 's', 10);
     run = enterKey(run, 'l', 20);
     expect(run.inputBuffer).toEqual(['a', 's', 'l']);
-    expect(run.forwardInputHistory.at(-1)).toEqual({ expected: 'j', actual: 'l', time: 20 });
+    expect(run.forwardInputHistory.at(-1)).toEqual({
+      expected: 'j',
+      actual: 'l',
+      time: 20,
+    });
   });
 
   it('starts timing on the first input instead of at creation', () => {

@@ -39,7 +39,9 @@ describe('createAlternatingGroup', () => {
       const parallel = pairs.every(([l, r]) => r === l);
       const mirrored = pairs.every(([l, r]) => r === 3 - l);
       expect(parallel || mirrored).toBe(true);
-      expect(left.every((index, i) => i === 0 || Math.abs(index - left[i - 1]) === 1)).toBe(true);
+      expect(
+        left.every((index, i) => i === 0 || Math.abs(index - left[i - 1]) === 1),
+      ).toBe(true);
     }
   });
 });
@@ -52,7 +54,9 @@ describe('createRollGroup', () => {
       const indexes = group.map((key) => GAME_KEYS.indexOf(key));
       const step = indexes[1] - indexes[0];
       expect(Math.abs(step)).toBe(1);
-      expect(indexes.every((index, i) => i === 0 || index - indexes[i - 1] === step)).toBe(true);
+      expect(
+        indexes.every((index, i) => i === 0 || index - indexes[i - 1] === step),
+      ).toBe(true);
     }
   });
 
@@ -110,7 +114,9 @@ describe('generateSequence', () => {
     for (let targetCount = 3; targetCount <= 30; targetCount++) {
       const sequence = generateSequence(42, targetCount);
       expect(countTargets(sequence)).toBe(targetCount);
-      expect(sequence.every((group) => group.length >= 3 && group.length <= 5)).toBe(true);
+      expect(
+        sequence.every((group) => group.length >= 3 && group.length <= 5),
+      ).toBe(true);
     }
   });
 

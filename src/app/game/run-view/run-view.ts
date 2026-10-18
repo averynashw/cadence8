@@ -24,10 +24,14 @@ export class RunView {
   protected readonly positions = computed(() => describePositions(this.run()));
   protected readonly started = computed(() => getRunStatus(this.run()) !== 'ready');
   protected readonly completedGroups = computed(() => countCompletedGroups(this.run()));
-  protected readonly visibleGroups = computed(() => this.positions().slice(this.hiddenGroups()));
+  protected readonly visibleGroups = computed(() =>
+    this.positions().slice(this.hiddenGroups()),
+  );
   private readonly hiddenGroups = signal(0);
   private readonly currentGroup = computed(() =>
-    this.positions().findIndex((group) => group.some((position) => position.state === 'current')),
+    this.positions().findIndex((group) =>
+      group.some((position) => position.state === 'current'),
+    ),
   );
   private readonly resizeCount = signal(0);
   private readonly stream = viewChild.required<ElementRef<HTMLElement>>('stream');
@@ -43,12 +47,14 @@ export class RunView {
   }
 
   private scrollLines(): void {
-    // reading the count makes this run again on every resize, even when no lines are hidden
+    // reading the count makes this run again on every resize, even when no lines
+    // are hidden
     this.resizeCount();
     const current = this.currentGroup();
     const hidden = this.hiddenGroups();
 
-    // after a restart, or a backspace into a hidden line, show every line and measure again
+    // after a restart, or a backspace into a hidden line, show every line and
+    // measure again
     if (current < hidden) {
       this.hiddenGroups.set(0);
       return;

@@ -30,7 +30,11 @@ describe('describePositions', () => {
     let run = createRun([['a', 's']]);
     run = enterKey(run, 'd', 0);
     run = backspace(run);
-    expect(describePositions(run)[0][0]).toEqual({ key: 'a', state: 'current', correct: null });
+    expect(describePositions(run)[0][0]).toEqual({
+      key: 'a',
+      state: 'current',
+      correct: null,
+    });
   });
 
   it('has no current position once the run is complete', () => {

@@ -70,6 +70,8 @@ describe('scoreRun', () => {
   it('reports zero speed for a one-key run', () => {
     let run = createRun([['a']]);
     run = enterKey(run, 'a', 0);
-    expect(scoreRun(run)).toEqual(expect.objectContaining({ keysPerMinute: 0, elapsedMs: 0 }));
+    expect(scoreRun(run)).toEqual(
+      expect.objectContaining({ keysPerMinute: 0, elapsedMs: 0 }),
+    );
   });
 });
